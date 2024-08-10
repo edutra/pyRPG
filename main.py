@@ -349,77 +349,79 @@ submenu_ativo = None
 
 # Loop principal do jogo
 while True:
-    for evento in pygame.event.get():
-        if evento.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        elif evento.type == pygame.VIDEORESIZE:
-            # Atualiza as dimensões da tela
-            LARGURA_TELA, ALTURA_TELA = evento.size
-            tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA), pygame.RESIZABLE)
-        elif evento.type == pygame.MOUSEBUTTONDOWN:
-            posicao_mouse = pygame.mouse.get_pos()
-            opcao_menu = checar_clique_menu(posicao_mouse, submenu_ativo)
-            
-            if opcao_menu:
-                if opcao_menu in ["player", "inimigo", "parede", "porta", "bau", "lava", "agua", "grama", "pedra", "remover"]:
-                    modo = opcao_menu
-                    submenu_ativo = None
-                elif opcao_menu == "estrutura":
-                    submenu_ativo = "estrutura"
-                elif opcao_menu == "objeto":
-                    submenu_ativo = "objeto"
-                elif opcao_menu == "chao":
-                    submenu_ativo = "chao"
-            else:
-                posicao_grid = ajustar_para_grid(posicao_mouse)
-                if modo == "player":
-                    mapa.adicionar_personagem(Personagem(f"Jogador{len(mapa.personagens) + 1}", posicao_grid, COR_PLAYER))
-                    modo = None
-                elif modo == "inimigo":
-                    mapa.adicionar_inimigo(Personagem(f"Inimigo{len(mapa.inimigos) + 1}", posicao_grid, COR_INIMIGO))
-                    modo = None
-                elif modo == "parede":
-                    mapa.adicionar_estrutura(Estrutura("Parede", posicao_grid, COR_PAREDE))
-                elif modo == "porta":
-                    mapa.adicionar_estrutura(Estrutura("Porta", posicao_grid, COR_PORTA))
-                    modo = None
-                elif modo == "bau":
-                    mapa.adicionar_objeto_interativo(ObjetoInterativo("Baú", posicao_grid, COR_BAU))
-                    modo = None
-                elif modo in ["lava", "agua", "grama", "pedra"]:
-                    mapa.modificar_chao(posicao_grid, modo)
-                elif modo == "remover":
-                    remover_estrutura_ou_objeto(mapa, posicao_mouse)
-                    modo = None
-                else:
-                    for personagem in mapa.personagens + mapa.inimigos:
-                        if personagem.checar_clique(posicao_mouse):
-                            personagem.arrastando = True
-                            personagem_selecionado = personagem
-                            break
-        elif evento.type == pygame.MOUSEBUTTONUP:
-            if evento.button == 3 and modo in ["lava", "agua", "grama", "pedra", "parede"]:  # Botão direito do mouse
-                modo = None  # Sai do modo de adicionar parede
-            elif personagem_selecionado:
-                personagem_selecionado.arrastando = False
-                personagem_selecionado.mover(ajustar_para_grid(pygame.mouse.get_pos()))
-                personagem_selecionado = None
-        elif evento.type == pygame.MOUSEMOTION:
-            if personagem_selecionado and personagem_selecionado.arrastando:
-                personagem_selecionado.mover(pygame.mouse.get_pos())
-        elif evento.type == pygame.KEYDOWN:
-            posicao_grid = ajustar_para_grid(pygame.mouse.get_pos())
-            if evento.key == pygame.K_z:
-                rolar_dado(tela)   
-            elif evento.key == pygame.K_c:
+    evento = pygame.event.wait()
+    if evento.type == pygame.QUIT:
+        pygame.quit()
+        sys.exit()
+    elif evento.type == pygame.VIDEORESIZE:
+        # Atualiza as dimensões da tela
+        LARGURA_TELA, ALTURA_TELA = evento.size
+        tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA), pygame.RESIZABLE)
+    elif evento.type == pygame.MOUSEBUTTONDOWN:
+        posicao_mouse = pygame.mouse.get_pos()
+        opcao_menu = checar_clique_menu(posicao_mouse, submenu_ativo)
+
+        if opcao_menu:
+            if opcao_menu in ["player", "inimigo", "parede", "porta", "bau", "lava", "agua", "grama", "pedra", "remover"]:
+                modo = opcao_menu
+                submenu_ativo = None
+            elif opcao_menu == "estrutura":
+                submenu_ativo = "estrutura"
+            elif opcao_menu == "objeto":
+                submenu_ativo = "objeto"
+            elif opcao_menu == "chao":
+                submenu_ativo = "chao"
+        else:
+            posicao_grid = ajustar_para_grid(posicao_mouse)
+            if modo == "player":
                 mapa.adicionar_personagem(Personagem(f"Jogador{len(mapa.personagens) + 1}", posicao_grid, COR_PLAYER))
-            elif evento.key == pygame.K_e:
+                modo = None
+            elif modo == "inimigo":
                 mapa.adicionar_inimigo(Personagem(f"Inimigo{len(mapa.inimigos) + 1}", posicao_grid, COR_INIMIGO))
-            elif evento.key == pygame.K_s:
-                mapa.salvar_mapa("mapa_salvo.json")
-            elif evento.key == pygame.K_l:
-                mapa.carregar_mapa("mapa_salvo.json")
+                modo = None
+            elif modo == "parede":
+                mapa.adicionar_estrutura(Estrutura("Parede", posicao_grid, COR_PAREDE))
+            elif modo == "porta":
+                mapa.adicionar_estrutura(Estrutura("Porta", posicao_grid, COR_PORTA))
+                modo = None
+            elif modo == "bau":
+                mapa.adicionar_objeto_interativo(ObjetoInterativo("Baú", posicao_grid, COR_BAU))
+                modo = None
+            elif modo in ["lava", "agua", "grama", "pedra"]:
+                mapa.modificar_chao(posicao_grid, modo)
+            elif modo == "remover":
+                remover_estrutura_ou_objeto(mapa, posicao_mouse)
+                modo = None
+            else:
+                for personagem in mapa.personagens + mapa.inimigos:
+                    if personagem.checar_clique(posicao_mouse):
+                        personagem.arrastando = True
+                        personagem_selecionado = personagem
+                        break
+    elif evento.type == pygame.MOUSEBUTTONUP:
+        if evento.button == 3 and modo in ["lava", "agua", "grama", "pedra", "parede"]:  # Botão direito do mouse
+            modo = None  # Sai do modo de adicionar parede
+        elif personagem_selecionado:
+            personagem_selecionado.arrastando = False
+            personagem_selecionado.mover(ajustar_para_grid(pygame.mouse.get_pos()))
+            personagem_selecionado = None
+    elif evento.type == pygame.MOUSEMOTION:
+        if personagem_selecionado and personagem_selecionado.arrastando:
+            personagem_selecionado.mover(pygame.mouse.get_pos())
+    elif evento.type == pygame.KEYDOWN:
+        posicao_grid = ajustar_para_grid(pygame.mouse.get_pos())
+        if evento.key == pygame.K_z:
+            rolar_dado(tela)
+        elif evento.key == pygame.K_c:
+            mapa.adicionar_personagem(Personagem(f"Jogador{len(mapa.personagens) + 1}", posicao_grid, COR_PLAYER))
+        elif evento.key == pygame.K_e:
+            mapa.adicionar_inimigo(Personagem(f"Inimigo{len(mapa.inimigos) + 1}", posicao_grid, COR_INIMIGO))
+        elif evento.key == pygame.K_s:
+            mapa.salvar_mapa("mapa_salvo.json")
+        elif evento.key == pygame.K_l:
+            mapa.carregar_mapa("mapa_salvo.json")
+        elif evento.key == pygame.K_x:
+            remover_estrutura_ou_objeto(mapa, posicao_grid)
 
     # Preenche o fundo
     tela.fill(COR_FUNDO)
