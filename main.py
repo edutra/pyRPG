@@ -12,20 +12,20 @@ from saver import Saver
 # Configurações iniciais
 WIDTH_SCREEN = 800
 HEIGHT_SCREEN = 600
-SIZE_CELULA = 40
-COLOR_FUNDO = (50, 50, 50)
+SIZE_CELL = 40
+COLOR_BACKGROUND = (50, 50, 50)
 COLOR_GRID = (100, 100, 100)
 COLOR_PLAYER = (0, 255, 0)
-COLOR_INIMIGO = (255, 0, 0)
-COLOR_PAREDE = (139, 69, 19)
-COLOR_PORTA = (184, 134, 11)
-COLOR_BAU = (139, 69, 19)
-COLOR_GRAMA = (136, 153, 102)
+COLOR_ENEMY = (255, 0, 0)
+COLOR_WALL = (139, 69, 19)
+COLOR_DOOR = (184, 134, 11)
+COLOR_CHEST = (139, 69, 19)
+COLOR_GRASS = (136, 153, 102)
 COLOR_PEDRA = (146,142,133)
 COLOR_LAVA = (255, 69, 0)
 COLOR_AGUA = (0, 191, 255)
 COLOR_MENU = (200, 200, 200)
-COLOR_TEXTO = (255, 255, 255)
+COLOR_TEXT = (255, 255, 255)
 COLOR_INPUT_BG = (200, 200, 200)
 WIDTH_MENU = 200
 
@@ -48,10 +48,10 @@ class MapaRPG:
 
     def inicializar_chao(self):
         chao = {}
-        for x in range(0, WIDTH_SCREEN - WIDTH_MENU, SIZE_CELULA):
-            for y in range(0, HEIGHT_SCREEN, SIZE_CELULA):
-                posicao_grid = (x + SIZE_CELULA // 2, y + SIZE_CELULA // 2)
-                chao[posicao_grid] = Chao("grama", posicao_grid, COLOR_GRAMA)
+        for x in range(0, WIDTH_SCREEN - WIDTH_MENU, SIZE_CELL):
+            for y in range(0, HEIGHT_SCREEN, SIZE_CELL):
+                posicao_grid = (x + SIZE_CELL // 2, y + SIZE_CELL // 2)
+                chao[posicao_grid] = Chao("grama", posicao_grid, COLOR_GRASS)
         return chao
     
     def adicionar_personagem(self, personagem):
@@ -73,7 +73,7 @@ class MapaRPG:
         elif tipo == "agua":
             cor = COLOR_AGUA
         elif tipo == "grama":
-            cor = COLOR_GRAMA
+            cor = COLOR_GRASS
         elif tipo == "pedra":
             cor = COLOR_PEDRA
 
@@ -92,9 +92,9 @@ class MapaRPG:
             inimigo.desenhar(screen)
     
     def desenhar_grid(self, screen):
-        for x in range(0, WIDTH_SCREEN - WIDTH_MENU, SIZE_CELULA):
+        for x in range(0, WIDTH_SCREEN - WIDTH_MENU, SIZE_CELL):
             pygame.draw.line(screen, COLOR_GRID, (x, 0), (x, HEIGHT_SCREEN))
-        for y in range(0, HEIGHT_SCREEN, SIZE_CELULA):
+        for y in range(0, HEIGHT_SCREEN, SIZE_CELL):
             pygame.draw.line(screen, COLOR_GRID, (0, y), (WIDTH_SCREEN - WIDTH_MENU, y))
 
     def save(self, screen):
@@ -115,11 +115,12 @@ class MapaRPG:
                         active = False
                     elif evento.key == pygame.K_BACKSPACE:
                         input_text = input_text[:-1]
+                        pygame.display.update()
                     else:
                         input_text += evento.unicode
 
-            # screen.fill(COLOR_FUNDO)
-            txt_surface = fonte.render(input_text, True, COLOR_TEXTO)
+            # screen.fill(COLOR_BACKGROUND)
+            txt_surface = fonte.render(input_text, True, COLOR_TEXT)
             largura_box = max(200, txt_surface.get_width()+10)
             input_box.w = largura_box
 
@@ -151,11 +152,12 @@ class MapaRPG:
                         active = False
                     elif evento.key == pygame.K_BACKSPACE:
                         input_text = input_text[:-1]
+                        print("teste ")
                     else:
                         input_text += evento.unicode
 
-            # screen.fill(COLOR_FUNDO)
-            txt_surface = fonte.render(input_text, True, COLOR_TEXTO)
+            # screen.fill(COLOR_BACKGROUND)
+            txt_surface = fonte.render(input_text, True, COLOR_TEXT)
             largura_box = max(200, txt_surface.get_width()+10)
             input_box.w = largura_box
 
@@ -169,8 +171,8 @@ class MapaRPG:
 
 def ajustar_para_grid(posicao):
     x, y = posicao
-    x = (x // SIZE_CELULA) * SIZE_CELULA + SIZE_CELULA // 2
-    y = (y // SIZE_CELULA) * SIZE_CELULA + SIZE_CELULA // 2
+    x = (x // SIZE_CELL) * SIZE_CELL + SIZE_CELL // 2
+    y = (y // SIZE_CELL) * SIZE_CELL + SIZE_CELL // 2
     return (x, y)
 
 # Função para desenhar o menu
@@ -276,8 +278,8 @@ def create_character(position_grid, is_player = True):
                 else:
                     input_text += evento.unicode
 
-        # screen.fill(COLOR_FUNDO)
-        txt_surface = fonte.render(input_text, True, COLOR_TEXTO)
+        # screen.fill(COLOR_BACKGROUND)
+        txt_surface = fonte.render(input_text, True, COLOR_TEXT)
         largura_box = max(200, txt_surface.get_width()+10)
         input_box.w = largura_box
 
@@ -315,8 +317,8 @@ def rolar_dado(screen):
                 else:
                     input_text += evento.unicode
 
-        # screen.fill(COLOR_FUNDO)
-        txt_surface = fonte.render(input_text, True, COLOR_TEXTO)
+        # screen.fill(COLOR_BACKGROUND)
+        txt_surface = fonte.render(input_text, True, COLOR_TEXT)
         largura_box = max(200, txt_surface.get_width()+10)
         input_box.w = largura_box
 
@@ -344,6 +346,8 @@ while True:
         # Atualiza as dimensões da screen
         WIDTH_SCREEN, HEIGHT_SCREEN = evento.size
         screen = pygame.display.set_mode((WIDTH_SCREEN, HEIGHT_SCREEN), pygame.RESIZABLE)
+        mapa.inicializar_chao()
+
     elif evento.type == pygame.MOUSEBUTTONDOWN:
         posicao_mouse = pygame.mouse.get_pos()
         opcao_menu = checar_clique_menu(posicao_mouse, submenu_ativo)
@@ -365,15 +369,15 @@ while True:
                 # mapa.adicionar_personagem(Personagem(f"Jogador{len(mapa.personagens) + 1}", posicao_grid, COLOR_PLAYER))
                 modo = None
             elif modo == "inimigo":
-                mapa.adicionar_inimigo(Personagem(f"Inimigo{len(mapa.inimigos) + 1}", posicao_grid, COLOR_INIMIGO))
+                mapa.adicionar_inimigo(Personagem(f"Inimigo{len(mapa.inimigos) + 1}", posicao_grid, COLOR_ENEMY))
                 modo = None
             elif modo == "parede":
-                mapa.adicionar_estrutura(Estrutura("Parede", posicao_grid, COLOR_PAREDE))
+                mapa.adicionar_estrutura(Estrutura("Parede", posicao_grid, COLOR_WALL))
             elif modo == "porta":
-                mapa.adicionar_estrutura(Estrutura("Porta", posicao_grid, COLOR_PORTA))
+                mapa.adicionar_estrutura(Estrutura("Porta", posicao_grid, COLOR_DOOR))
                 modo = None
             elif modo == "bau":
-                mapa.adicionar_objeto_interativo(ObjetoInterativo("Baú", posicao_grid, COLOR_BAU))
+                mapa.adicionar_objeto_interativo(ObjetoInterativo("Baú", posicao_grid, COLOR_CHEST))
                 modo = None
             elif modo in ["lava", "agua", "grama", "pedra"]:
                 mapa.modificar_chao(posicao_grid, modo)
@@ -412,7 +416,7 @@ while True:
             remover_estrutura_ou_objeto(mapa, posicao_grid)
 
     # Preenche o fundo
-    screen.fill(COLOR_FUNDO)
+    screen.fill(COLOR_BACKGROUND)
        
     # Desenha os personagens, estruturas e objetos interativos
     mapa.desenhar(screen)
