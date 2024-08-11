@@ -15,3 +15,14 @@ This software allows the game master to specify a map and control the characters
 You just need to clone the repo, install the dependencies (requirements.txt to be done), and execute:
 
 ```python3 main.py```
+
+## Usage
+
+'''
+x -> remove
+c -> create character(player)
+e -> create enemy
+z -> roll dice
+s -> save map
+l -> load map
+'''
