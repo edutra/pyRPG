@@ -13,4 +13,5 @@ This software allows the game master to specify a map and control the characters
 ## Installation
 
 You just need to clone the repo, install the dependencies (requirements.txt to be done), and execute:
+
 ```python3 main.py```
