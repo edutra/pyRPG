@@ -10,30 +10,30 @@ from ground import Chao
 from saver import Saver
 
 # Configurações iniciais
-LARGURA_TELA = 800
-ALTURA_TELA = 600
-TAMANHO_CELULA = 40
-COR_FUNDO = (50, 50, 50)
-COR_GRID = (100, 100, 100)
-COR_PLAYER = (0, 255, 0)
-COR_INIMIGO = (255, 0, 0)
-COR_PAREDE = (139, 69, 19)
-COR_PORTA = (184, 134, 11)
-COR_BAU = (139, 69, 19)
-COR_GRAMA = (136, 153, 102)
-COR_PEDRA = (146,142,133)
-COR_LAVA = (255, 69, 0)
-COR_AGUA = (0, 191, 255)
-COR_MENU = (200, 200, 200)
-COR_TEXTO = (255, 255, 255)
-COR_INPUT_BG = (200, 200, 200)
-LARGURA_MENU = 200
+WIDTH_SCREEN = 800
+HEIGHT_SCREEN = 600
+SIZE_CELULA = 40
+COLOR_FUNDO = (50, 50, 50)
+COLOR_GRID = (100, 100, 100)
+COLOR_PLAYER = (0, 255, 0)
+COLOR_INIMIGO = (255, 0, 0)
+COLOR_PAREDE = (139, 69, 19)
+COLOR_PORTA = (184, 134, 11)
+COLOR_BAU = (139, 69, 19)
+COLOR_GRAMA = (136, 153, 102)
+COLOR_PEDRA = (146,142,133)
+COLOR_LAVA = (255, 69, 0)
+COLOR_AGUA = (0, 191, 255)
+COLOR_MENU = (200, 200, 200)
+COLOR_TEXTO = (255, 255, 255)
+COLOR_INPUT_BG = (200, 200, 200)
+WIDTH_MENU = 200
 
 # Inicializa o pygame
 pygame.init()
 
-# Cria a tela principal com a opção de redimensionamento
-tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA), pygame.RESIZABLE)
+# Cria a screen principal com a opção de redimensionamento
+screen = pygame.display.set_mode((WIDTH_SCREEN, HEIGHT_SCREEN), pygame.RESIZABLE)
 pygame.display.set_caption("Mapa de RPG de Mesa")
 
 
@@ -48,10 +48,10 @@ class MapaRPG:
 
     def inicializar_chao(self):
         chao = {}
-        for x in range(0, LARGURA_TELA - LARGURA_MENU, TAMANHO_CELULA):
-            for y in range(0, ALTURA_TELA, TAMANHO_CELULA):
-                posicao_grid = (x + TAMANHO_CELULA // 2, y + TAMANHO_CELULA // 2)
-                chao[posicao_grid] = Chao("grama", posicao_grid, COR_GRAMA)
+        for x in range(0, WIDTH_SCREEN - WIDTH_MENU, SIZE_CELULA):
+            for y in range(0, HEIGHT_SCREEN, SIZE_CELULA):
+                posicao_grid = (x + SIZE_CELULA // 2, y + SIZE_CELULA // 2)
+                chao[posicao_grid] = Chao("grama", posicao_grid, COLOR_GRAMA)
         return chao
     
     def adicionar_personagem(self, personagem):
@@ -69,35 +69,35 @@ class MapaRPG:
     def modificar_chao(self, posicao_grid, tipo):
         cor = ''
         if tipo == "lava": 
-            cor = COR_LAVA
+            cor = COLOR_LAVA
         elif tipo == "agua":
-            cor = COR_AGUA
+            cor = COLOR_AGUA
         elif tipo == "grama":
-            cor = COR_GRAMA
+            cor = COLOR_GRAMA
         elif tipo == "pedra":
-            cor = COR_PEDRA
+            cor = COLOR_PEDRA
 
         self.chao[posicao_grid] = Chao(tipo, posicao_grid, cor)
     
-    def desenhar(self, tela):
+    def desenhar(self, screen):
         for chao in self.chao.values():
-            chao.desenhar(tela)
+            chao.desenhar(screen)
         for estrutura in self.estruturas:
-            estrutura.desenhar(tela)
+            estrutura.desenhar(screen)
         for objeto in self.objetos_interativos:
-            objeto.desenhar(tela)
+            objeto.desenhar(screen)
         for personagem in self.personagens:
-            personagem.desenhar(tela)
+            personagem.desenhar(screen)
         for inimigo in self.inimigos:
-            inimigo.desenhar(tela)
+            inimigo.desenhar(screen)
     
-    def desenhar_grid(self, tela):
-        for x in range(0, LARGURA_TELA - LARGURA_MENU, TAMANHO_CELULA):
-            pygame.draw.line(tela, COR_GRID, (x, 0), (x, ALTURA_TELA))
-        for y in range(0, ALTURA_TELA, TAMANHO_CELULA):
-            pygame.draw.line(tela, COR_GRID, (0, y), (LARGURA_TELA - LARGURA_MENU, y))
+    def desenhar_grid(self, screen):
+        for x in range(0, WIDTH_SCREEN - WIDTH_MENU, SIZE_CELULA):
+            pygame.draw.line(screen, COLOR_GRID, (x, 0), (x, HEIGHT_SCREEN))
+        for y in range(0, HEIGHT_SCREEN, SIZE_CELULA):
+            pygame.draw.line(screen, COLOR_GRID, (0, y), (WIDTH_SCREEN - WIDTH_MENU, y))
 
-    def save(self, tela):
+    def save(self, screen):
         input_box = pygame.Rect(100, 100, 140, 32)
         fonte = pygame.font.Font(None, 32)
         clock = pygame.time.Clock()
@@ -118,18 +118,18 @@ class MapaRPG:
                     else:
                         input_text += evento.unicode
 
-            # tela.fill(COR_FUNDO)
-            txt_surface = fonte.render(input_text, True, COR_TEXTO)
+            # screen.fill(COLOR_FUNDO)
+            txt_surface = fonte.render(input_text, True, COLOR_TEXTO)
             largura_box = max(200, txt_surface.get_width()+10)
             input_box.w = largura_box
 
-            tela.blit(txt_surface, (input_box.x+5, input_box.y+5))
-            pygame.draw.rect(tela, COR_INPUT_BG, input_box, 2)
+            screen.blit(txt_surface, (input_box.x+5, input_box.y+5))
+            pygame.draw.rect(screen, COLOR_INPUT_BG, input_box, 2)
 
             pygame.display.flip()
             clock.tick(30)
 
-    def load(self, tela):
+    def load(self, screen):
         input_box = pygame.Rect(100, 100, 140, 32)
         fonte = pygame.font.Font(None, 32)
         clock = pygame.time.Clock()
@@ -154,13 +154,13 @@ class MapaRPG:
                     else:
                         input_text += evento.unicode
 
-            # tela.fill(COR_FUNDO)
-            txt_surface = fonte.render(input_text, True, COR_TEXTO)
+            # screen.fill(COLOR_FUNDO)
+            txt_surface = fonte.render(input_text, True, COLOR_TEXTO)
             largura_box = max(200, txt_surface.get_width()+10)
             input_box.w = largura_box
 
-            tela.blit(txt_surface, (input_box.x+5, input_box.y+5))
-            pygame.draw.rect(tela, COR_INPUT_BG, input_box, 2)
+            screen.blit(txt_surface, (input_box.x+5, input_box.y+5))
+            pygame.draw.rect(screen, COLOR_INPUT_BG, input_box, 2)
 
             pygame.display.flip()
             clock.tick(30)
@@ -169,13 +169,13 @@ class MapaRPG:
 
 def ajustar_para_grid(posicao):
     x, y = posicao
-    x = (x // TAMANHO_CELULA) * TAMANHO_CELULA + TAMANHO_CELULA // 2
-    y = (y // TAMANHO_CELULA) * TAMANHO_CELULA + TAMANHO_CELULA // 2
+    x = (x // SIZE_CELULA) * SIZE_CELULA + SIZE_CELULA // 2
+    y = (y // SIZE_CELULA) * SIZE_CELULA + SIZE_CELULA // 2
     return (x, y)
 
 # Função para desenhar o menu
-def desenhar_menu(tela, submenu=None):
-    pygame.draw.rect(tela, COR_MENU, (LARGURA_TELA - LARGURA_MENU, 0, LARGURA_MENU, ALTURA_TELA))
+def desenhar_menu(screen, submenu=None):
+    pygame.draw.rect(screen, COLOR_MENU, (WIDTH_SCREEN - WIDTH_MENU, 0, WIDTH_MENU, HEIGHT_SCREEN))
     fonte = pygame.font.SysFont(None, 36)
     texto_player = fonte.render('Adicionar Player', True, (0, 0, 0))
     texto_inimigo = fonte.render('Adicionar Inimigo', True, (0, 0, 0))
@@ -184,35 +184,35 @@ def desenhar_menu(tela, submenu=None):
     texto_chao = fonte.render('Modificar Chão', True, (0, 0, 0))
     texto_remover = fonte.render('Remover', True, (0, 0, 0))
     
-    tela.blit(texto_player, (LARGURA_TELA - LARGURA_MENU + 20, 20))
-    tela.blit(texto_inimigo, (LARGURA_TELA - LARGURA_MENU + 20, 80))
-    tela.blit(texto_estrutura, (LARGURA_TELA - LARGURA_MENU + 20, 140))
-    tela.blit(texto_objeto, (LARGURA_TELA - LARGURA_MENU + 20, 200))
-    tela.blit(texto_chao, (LARGURA_TELA - LARGURA_MENU + 20, 260))
-    tela.blit(texto_remover, (LARGURA_TELA - LARGURA_MENU + 20, 320))
+    screen.blit(texto_player, (WIDTH_SCREEN - WIDTH_MENU + 20, 20))
+    screen.blit(texto_inimigo, (WIDTH_SCREEN - WIDTH_MENU + 20, 80))
+    screen.blit(texto_estrutura, (WIDTH_SCREEN - WIDTH_MENU + 20, 140))
+    screen.blit(texto_objeto, (WIDTH_SCREEN - WIDTH_MENU + 20, 200))
+    screen.blit(texto_chao, (WIDTH_SCREEN - WIDTH_MENU + 20, 260))
+    screen.blit(texto_remover, (WIDTH_SCREEN - WIDTH_MENU + 20, 320))
     
     if submenu == "estrutura":
         texto_parede = fonte.render('Adicionar Parede', True, (0, 0, 0))
         texto_porta = fonte.render('Adicionar Porta', True, (0, 0, 0))
-        tela.blit(texto_parede, (LARGURA_TELA - LARGURA_MENU + 20, 380))
-        tela.blit(texto_porta, (LARGURA_TELA - LARGURA_MENU + 20, 440))
+        screen.blit(texto_parede, (WIDTH_SCREEN - WIDTH_MENU + 20, 380))
+        screen.blit(texto_porta, (WIDTH_SCREEN - WIDTH_MENU + 20, 440))
     elif submenu == "objeto":
         texto_bau = fonte.render('Adicionar Baú', True, (0, 0, 0))
-        tela.blit(texto_bau, (LARGURA_TELA - LARGURA_MENU + 20, 380))
+        screen.blit(texto_bau, (WIDTH_SCREEN - WIDTH_MENU + 20, 380))
     elif submenu == "chao":
         texto_lava = fonte.render('Lava', True, (0, 0, 0))
         texto_agua = fonte.render('Água', True, (0, 0, 0))
         texto_grama = fonte.render('Grama', True, (0, 0, 0))
         texto_pedra = fonte.render('Pedra', True, (0, 0, 0))
-        tela.blit(texto_lava, (LARGURA_TELA - LARGURA_MENU + 20, 380))
-        tela.blit(texto_agua, (LARGURA_TELA - LARGURA_MENU + 20, 440))
-        tela.blit(texto_grama, (LARGURA_TELA - LARGURA_MENU + 20, 500))
-        tela.blit(texto_pedra, (LARGURA_TELA - LARGURA_MENU + 20, 560))
+        screen.blit(texto_lava, (WIDTH_SCREEN - WIDTH_MENU + 20, 380))
+        screen.blit(texto_agua, (WIDTH_SCREEN - WIDTH_MENU + 20, 440))
+        screen.blit(texto_grama, (WIDTH_SCREEN - WIDTH_MENU + 20, 500))
+        screen.blit(texto_pedra, (WIDTH_SCREEN - WIDTH_MENU + 20, 560))
 
 
 # Função para detectar clique no menu
 def checar_clique_menu(posicao_mouse, submenu=None):
-    if posicao_mouse[0] > LARGURA_TELA - LARGURA_MENU:
+    if posicao_mouse[0] > WIDTH_SCREEN - WIDTH_MENU:
         if 20 <= posicao_mouse[1] <= 70:
             return "player"
         elif 80 <= posicao_mouse[1] <= 130:
@@ -269,20 +269,20 @@ def create_character(position_grid, is_player = True):
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_RETURN:
 
-                    mapa.adicionar_personagem(Personagem(input_text, posicao_grid, COR_PLAYER))
+                    mapa.adicionar_personagem(Personagem(input_text, posicao_grid, COLOR_PLAYER))
                     active = False
                 elif evento.key == pygame.K_BACKSPACE:
                     input_text = input_text[:-1]
                 else:
                     input_text += evento.unicode
 
-        # tela.fill(COR_FUNDO)
-        txt_surface = fonte.render(input_text, True, COR_TEXTO)
+        # screen.fill(COLOR_FUNDO)
+        txt_surface = fonte.render(input_text, True, COLOR_TEXTO)
         largura_box = max(200, txt_surface.get_width()+10)
         input_box.w = largura_box
 
-        tela.blit(txt_surface, (input_box.x+5, input_box.y+5))
-        pygame.draw.rect(tela, COR_INPUT_BG, input_box, 2)
+        screen.blit(txt_surface, (input_box.x+5, input_box.y+5))
+        pygame.draw.rect(screen, COLOR_INPUT_BG, input_box, 2)
 
         pygame.display.flip()
         clock.tick(30)
@@ -290,7 +290,7 @@ def create_character(position_grid, is_player = True):
 
 
 
-def rolar_dado(tela):
+def rolar_dado(screen):
     input_box = pygame.Rect(100, 100, 140, 32)
     fonte = pygame.font.Font(None, 32)
     clock = pygame.time.Clock()
@@ -315,13 +315,13 @@ def rolar_dado(tela):
                 else:
                     input_text += evento.unicode
 
-        # tela.fill(COR_FUNDO)
-        txt_surface = fonte.render(input_text, True, COR_TEXTO)
+        # screen.fill(COLOR_FUNDO)
+        txt_surface = fonte.render(input_text, True, COLOR_TEXTO)
         largura_box = max(200, txt_surface.get_width()+10)
         input_box.w = largura_box
 
-        tela.blit(txt_surface, (input_box.x+5, input_box.y+5))
-        pygame.draw.rect(tela, COR_INPUT_BG, input_box, 2)
+        screen.blit(txt_surface, (input_box.x+5, input_box.y+5))
+        pygame.draw.rect(screen, COLOR_INPUT_BG, input_box, 2)
 
         pygame.display.flip()
         clock.tick(30)
@@ -341,9 +341,9 @@ while True:
         pygame.quit()
         sys.exit()
     elif evento.type == pygame.VIDEORESIZE:
-        # Atualiza as dimensões da tela
-        LARGURA_TELA, ALTURA_TELA = evento.size
-        tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA), pygame.RESIZABLE)
+        # Atualiza as dimensões da screen
+        WIDTH_SCREEN, HEIGHT_SCREEN = evento.size
+        screen = pygame.display.set_mode((WIDTH_SCREEN, HEIGHT_SCREEN), pygame.RESIZABLE)
     elif evento.type == pygame.MOUSEBUTTONDOWN:
         posicao_mouse = pygame.mouse.get_pos()
         opcao_menu = checar_clique_menu(posicao_mouse, submenu_ativo)
@@ -362,18 +362,18 @@ while True:
             posicao_grid = ajustar_para_grid(posicao_mouse)
             if modo == "player":
                 create_character(posicao_grid)
-                # mapa.adicionar_personagem(Personagem(f"Jogador{len(mapa.personagens) + 1}", posicao_grid, COR_PLAYER))
+                # mapa.adicionar_personagem(Personagem(f"Jogador{len(mapa.personagens) + 1}", posicao_grid, COLOR_PLAYER))
                 modo = None
             elif modo == "inimigo":
-                mapa.adicionar_inimigo(Personagem(f"Inimigo{len(mapa.inimigos) + 1}", posicao_grid, COR_INIMIGO))
+                mapa.adicionar_inimigo(Personagem(f"Inimigo{len(mapa.inimigos) + 1}", posicao_grid, COLOR_INIMIGO))
                 modo = None
             elif modo == "parede":
-                mapa.adicionar_estrutura(Estrutura("Parede", posicao_grid, COR_PAREDE))
+                mapa.adicionar_estrutura(Estrutura("Parede", posicao_grid, COLOR_PAREDE))
             elif modo == "porta":
-                mapa.adicionar_estrutura(Estrutura("Porta", posicao_grid, COR_PORTA))
+                mapa.adicionar_estrutura(Estrutura("Porta", posicao_grid, COLOR_PORTA))
                 modo = None
             elif modo == "bau":
-                mapa.adicionar_objeto_interativo(ObjetoInterativo("Baú", posicao_grid, COR_BAU))
+                mapa.adicionar_objeto_interativo(ObjetoInterativo("Baú", posicao_grid, COLOR_BAU))
                 modo = None
             elif modo in ["lava", "agua", "grama", "pedra"]:
                 mapa.modificar_chao(posicao_grid, modo)
@@ -399,30 +399,30 @@ while True:
     elif evento.type == pygame.KEYDOWN:
         posicao_grid = ajustar_para_grid(pygame.mouse.get_pos())
         if evento.key == pygame.K_z:
-            rolar_dado(tela)
+            rolar_dado(screen)
         elif evento.key == pygame.K_c:
             modo = "player"
         elif evento.key == pygame.K_e:
             modo = "inimigo"
         elif evento.key == pygame.K_s:
-            mapa.save(tela)
+            mapa.save(screen)
         elif evento.key == pygame.K_l:
-            mapa.load(tela)
+            mapa.load(screen)
         elif evento.key == pygame.K_x:
             remover_estrutura_ou_objeto(mapa, posicao_grid)
 
     # Preenche o fundo
-    tela.fill(COR_FUNDO)
+    screen.fill(COLOR_FUNDO)
        
     # Desenha os personagens, estruturas e objetos interativos
-    mapa.desenhar(tela)
+    mapa.desenhar(screen)
      
     # Desenha o grid
-    mapa.desenhar_grid(tela)
+    mapa.desenhar_grid(screen)
 
     # Desenha o menu
-    desenhar_menu(tela, submenu_ativo)
+    desenhar_menu(screen, submenu_ativo)
     
-    # Atualiza a tela
+    # Atualiza a screen
     pygame.display.flip()
 
