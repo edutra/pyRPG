@@ -6,8 +6,10 @@ import random
 import json
 from character import Personagem
 from structure import Estrutura
-from object import ObjetoInterativo
+from objects import ObjetoInterativo
 from ground import Chao
+from saver import Saver
+
 # Configurações iniciais
 LARGURA_TELA = 800
 ALTURA_TELA = 600
@@ -95,28 +97,6 @@ class MapaRPG:
             pygame.draw.line(tela, COR_GRID, (x, 0), (x, ALTURA_TELA))
         for y in range(0, ALTURA_TELA, TAMANHO_CELULA):
             pygame.draw.line(tela, COR_GRID, (0, y), (LARGURA_TELA - LARGURA_MENU, y))
-
-    def salvar_mapa(self, caminho):
-        dados = {
-            "personagens": [personagem.to_dict() for personagem in self.personagens],
-            "estruturas": [estrutura.to_dict() for estrutura in self.estruturas],
-            "objetos_interativos": [objeto.to_dict() for objeto in self.objetos_interativos],
-            "chao": [chao.to_dict() for chao in self.chao.values()],
-            "inimigos": [inimigo.to_dict() for inimigo in self.inimigos]
-        }
-        with open(caminho, 'w') as arquivo:
-            json.dump(dados, arquivo, indent=4)
-        print(f"Mapa salvo em {caminho}.")
-
-    def carregar_mapa(self, caminho):
-        with open(caminho, 'r') as arquivo:
-            dados = json.load(arquivo)
-        self.personagens = [Personagem.from_dict(p) for p in dados["personagens"]]
-        self.estruturas = [Estrutura.from_dict(e) for e in dados["estruturas"]]
-        self.objetos_interativos = [ObjetoInterativo.from_dict(o) for o in dados["objetos_interativos"]]
-        self.chao = {tuple(c["posicao"]): Chao.from_dict(c) for c in dados["chao"]}
-        self.inimigos = [Personagem.from_dict(p) for p in dados["inimigos"]]
-        print(f"Mapa carregado de {caminho}.")
 
 def ajustar_para_grid(posicao):
     x, y = posicao
@@ -355,9 +335,15 @@ while True:
         elif evento.key == pygame.K_e:
             mapa.adicionar_inimigo(Personagem(f"Inimigo{len(mapa.inimigos) + 1}", posicao_grid, COR_INIMIGO))
         elif evento.key == pygame.K_s:
-            mapa.salvar_mapa("mapa_salvo.json")
+            Saver.salvar_mapa("mapa.json", mapa.personagens, mapa.estruturas, mapa.objetos_interativos, mapa.chao, mapa.inimigos)
+            # mapa.salvar_mapa("mapa_salvo.json")
         elif evento.key == pygame.K_l:
-            mapa.carregar_mapa("mapa_salvo.json")
+            chars, mapa.estruturas, mapa.objetos_interativos, mapa.chao, enemies = Saver.carregar_mapa("mapa.json")
+            mapa.personagens = []
+            mapa.inimigos = []
+            for x in chars[0] + enemies[0]:
+                mapa.adicionar_personagem(x)
+            # mapa.carregar_mapa("mapa_salvo.json")
         elif evento.key == pygame.K_x:
             remover_estrutura_ou_objeto(mapa, posicao_grid)
 

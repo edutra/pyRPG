@@ -41,4 +41,4 @@ class Personagem:
 
     @staticmethod
     def from_dict(data):
-        return Personagem(data["nome"], tuple(data["posicao"]), data["cor"])
+        return Personagem(data["nome"], tuple(data["posicao"]), tuple(data["cor"]))
