@@ -18,4 +18,4 @@ You just need to clone the repo, install the dependencies (requirements.txt to b
 
 ## Usage
 
-''' x -> remove \n c -> create character(player) \n e -> create enemy \n z -> roll dice \n s -> save map \n l -> load map '''
+```x -> remove \n c -> create character(player) \n e -> create enemy \n z -> roll dice \n s -> save map \n l -> load map``` 
