@@ -40,31 +40,52 @@ pygame.display.set_caption("Mapa de RPG de Mesa")
 
 class MapaRPG:
     def __init__(self):
+        self.andares = {}
+        self.floor_number = 0
+        self.init_floor(self.floor_number)
         self.personagens = []
         self.estruturas = []
         self.objetos_interativos = []
-        self.chao = self.inicializar_chao()
+        # self.chao = self.inicializar_chao()
         self.inimigos = []
 
-    def inicializar_chao(self):
+    def init_floor(self, floor_number):
+        if floor_number not in self.andares:
+            self.andares[floor_number] = {
+                "chao": {},
+                "estruturas": [],
+                "objetos_interativos": [],
+                "personagens": [],
+                "inimigos": []
+            }
+            self.inicializar_chao(floor_number)
+
+    def inicializar_chao(self, floor_number):
         chao = {}
         for x in range(0, WIDTH_SCREEN - WIDTH_MENU, SIZE_CELL):
             for y in range(0, HEIGHT_SCREEN, SIZE_CELL):
                 posicao_grid = (x + SIZE_CELL // 2, y + SIZE_CELL // 2)
                 chao[posicao_grid] = Chao("grama", posicao_grid, COLOR_GRASS)
+        self.andares[floor_number]["chao"] = chao
         return chao
     
+    def mudar_andar(self, numero_andar):
+        print(numero_andar)
+        if numero_andar not in self.andares:
+            self.init_floor(numero_andar)
+        self.floor_number = numero_andar
+    
     def adicionar_personagem(self, personagem):
-        self.personagens.append(personagem)
+        self.andares[self.floor_number]["personagens"].append(personagem)
 
     def adicionar_inimigo(self, inimigo):
-        self.inimigos.append(inimigo)
+        self.andares[self.floor_number]["inimigos"].append(inimigo)
     
     def adicionar_estrutura(self, estrutura):
-        self.estruturas.append(estrutura)
+        self.andares[self.floor_number]["estruturas"].append(estrutura)
     
     def adicionar_objeto_interativo(self, objeto):
-        self.objetos_interativos.append(objeto)
+        self.andares[self.floor_number]["objetos_interativos"].append(objeto)
     
     def modificar_chao(self, posicao_grid, tipo):
         cor = ''
@@ -77,20 +98,21 @@ class MapaRPG:
         elif tipo == "pedra":
             cor = COLOR_PEDRA
 
-        self.chao[posicao_grid] = Chao(tipo, posicao_grid, cor)
-    
+        novo_chao = Chao(tipo, posicao_grid, cor)
+        self.andares[self.floor_number]["chao"][posicao_grid] = novo_chao    
     def desenhar(self, screen):
-        for chao in self.chao.values():
+        andar = self.andares[self.floor_number]
+        for chao in andar["chao"].values():
             chao.desenhar(screen)
-        for estrutura in self.estruturas:
+        for estrutura in andar["estruturas"]:
             estrutura.desenhar(screen)
-        for objeto in self.objetos_interativos:
+        for objeto in andar["objetos_interativos"]:
             objeto.desenhar(screen)
-        for personagem in self.personagens:
+        for personagem in andar["personagens"]:
             personagem.desenhar(screen)
-        for inimigo in self.inimigos:
-            inimigo.desenhar(screen)
-    
+        for inimigo in andar["inimigos"]:
+            inimigo.desenhar(screen)    
+
     def desenhar_grid(self, screen):
         for x in range(0, WIDTH_SCREEN - WIDTH_MENU, SIZE_CELL):
             pygame.draw.line(screen, COLOR_GRID, (x, 0), (x, HEIGHT_SCREEN))
@@ -414,6 +436,11 @@ while True:
             mapa.load(screen)
         elif evento.key == pygame.K_x:
             remover_estrutura_ou_objeto(mapa, posicao_grid)
+        elif evento.key == pygame.K_UP:  # Muda para andar superior
+            mapa.mudar_andar(mapa.floor_number + 1)
+        elif evento.key == pygame.K_DOWN:  # Muda para andar inferior
+            mapa.mudar_andar(mapa.floor_number - 1)
+
 
     # Preenche o fundo
     screen.fill(COLOR_BACKGROUND)
