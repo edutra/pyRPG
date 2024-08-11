@@ -3,7 +3,6 @@ import sys
 # import tkinter as tk
 # from tkinter import simpledialog
 import random
-import json
 from character import Personagem
 from structure import Estrutura
 from objects import ObjetoInterativo
@@ -362,7 +361,8 @@ while True:
         else:
             posicao_grid = ajustar_para_grid(posicao_mouse)
             if modo == "player":
-                mapa.adicionar_personagem(Personagem(f"Jogador{len(mapa.personagens) + 1}", posicao_grid, COR_PLAYER))
+                create_character(posicao_grid)
+                # mapa.adicionar_personagem(Personagem(f"Jogador{len(mapa.personagens) + 1}", posicao_grid, COR_PLAYER))
                 modo = None
             elif modo == "inimigo":
                 mapa.adicionar_inimigo(Personagem(f"Inimigo{len(mapa.inimigos) + 1}", posicao_grid, COR_INIMIGO))
@@ -401,13 +401,11 @@ while True:
         if evento.key == pygame.K_z:
             rolar_dado(tela)
         elif evento.key == pygame.K_c:
-            create_character(posicao_grid)
+            modo = "player"
         elif evento.key == pygame.K_e:
-            mapa.adicionar_inimigo(Personagem(f"Inimigo{len(mapa.inimigos) + 1}", posicao_grid, COR_INIMIGO))
+            modo = "inimigo"
         elif evento.key == pygame.K_s:
             mapa.save(tela)
-            # Saver.salvar_mapa("mapa.json", mapa.personagens, mapa.estruturas, mapa.objetos_interativos, mapa.chao, mapa.inimigos)
-            # mapa.salvar_mapa("mapa_salvo.json")
         elif evento.key == pygame.K_l:
             mapa.load(tela)
         elif evento.key == pygame.K_x:
