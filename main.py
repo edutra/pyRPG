@@ -4,7 +4,10 @@ import sys
 # from tkinter import simpledialog
 import random
 import json
-
+from character import Personagem
+from structure import Estrutura
+from object import ObjetoInterativo
+from ground import Chao
 # Configurações iniciais
 LARGURA_TELA = 800
 ALTURA_TELA = 600
@@ -22,7 +25,7 @@ COR_LAVA = (255, 69, 0)
 COR_AGUA = (0, 191, 255)
 COR_MENU = (200, 200, 200)
 COR_TEXTO = (255, 255, 255)
-COR_INPUT_BG = (0, 0, 0)
+COR_INPUT_BG = (200, 200, 200)
 LARGURA_MENU = 200
 
 # Inicializa o pygame
@@ -32,107 +35,7 @@ pygame.init()
 tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA), pygame.RESIZABLE)
 pygame.display.set_caption("Mapa de RPG de Mesa")
 
-# Definindo classes para jogadores, inimigos, estruturas e objetos interativos
-class Personagem:
-    def __init__(self, nome, posicao, cor):
-        self.nome = nome
-        self.posicao = posicao
-        self.cor = cor
-        self.raio = TAMANHO_CELULA // 3
-        self.arrastando = False
-        self.fonte = pygame.font.Font(None, 24)  # Fonte para desenhar o nome
-    
-    def desenhar(self, tela):
-        # Desenha o círculo que representa o personagem
-        pygame.draw.circle(tela, self.cor, self.posicao, self.raio)
-        
-        # Renderiza o nome do personagem
-        texto_nome = self.fonte.render(self.nome, True, COR_TEXTO)
-        pos_texto = (self.posicao[0] - texto_nome.get_width() // 2, self.posicao[1] - self.raio - 20)
-        tela.blit(texto_nome, pos_texto)
-        
-    def mover(self, nova_posicao):
-        self.posicao = nova_posicao
-    
-    def checar_clique(self, posicao_mouse):
-        dx = self.posicao[0] - posicao_mouse[0]
-        dy = self.posicao[1] - posicao_mouse[1]
-        distancia = (dx ** 2 + dy ** 2) ** 0.5
-        return distancia <= self.raio
 
-    def to_dict(self):
-        return {
-            "nome": self.nome,
-            "posicao": self.posicao,
-            "cor": self.cor,
-        }
-
-    @staticmethod
-    def from_dict(data):
-        return Personagem(data["nome"], tuple(data["posicao"]), data["cor"])
-
-class Estrutura:
-    def __init__(self, nome, posicao, cor):
-        self.nome = nome
-        self.posicao = posicao
-        self.cor = cor
-        self.largura = TAMANHO_CELULA
-        self.altura = TAMANHO_CELULA
-    
-    def desenhar(self, tela):
-        pygame.draw.rect(tela, self.cor, pygame.Rect(self.posicao[0] - self.largura // 2, self.posicao[1] - self.altura // 2, self.largura, self.altura))
-
-    def to_dict(self):
-        return {
-            "nome": self.nome,
-            "posicao": self.posicao,
-            "cor": self.cor,
-        }
-
-    @staticmethod
-    def from_dict(data):
-        return Estrutura(data["nome"], tuple(data["posicao"]), data["cor"])
-
-class ObjetoInterativo:
-    def __init__(self, nome, posicao, cor):
-        self.nome = nome
-        self.posicao = posicao
-        self.cor = cor
-        self.largura = TAMANHO_CELULA // 2
-        self.altura = TAMANHO_CELULA // 2
-    
-    def desenhar(self, tela):
-        pygame.draw.rect(tela, self.cor, pygame.Rect(self.posicao[0] - self.largura // 2, self.posicao[1] - self.altura // 2, self.largura, self.altura))
-
-    def to_dict(self):
-        return {
-            "nome": self.nome,
-            "posicao": self.posicao,
-            "cor": self.cor,
-        }
-
-    @staticmethod
-    def from_dict(data):
-        return ObjetoInterativo(data["nome"], tuple(data["posicao"]), data["cor"])
-class Chao:
-    def __init__(self, tipo, posicao, cor):
-        self.tipo = tipo
-        self.posicao = posicao
-        self.cor = cor
-    
-    def desenhar(self, tela):
-        pygame.draw.rect(tela, self.cor, pygame.Rect(self.posicao[0] - TAMANHO_CELULA // 2, self.posicao[1] - TAMANHO_CELULA // 2, TAMANHO_CELULA, TAMANHO_CELULA))
-
-    def to_dict(self):
-        return {
-            "tipo": self.tipo,
-            "posicao": self.posicao,
-            "cor": self.cor,
-        }
-
-    @staticmethod
-    def from_dict(data):
-        return Chao(data["tipo"], tuple(data["posicao"]), data["cor"])
 
 class MapaRPG:
     def __init__(self):
@@ -302,6 +205,41 @@ def remover_estrutura_ou_objeto(mapa, posicao_mouse):
     mapa.personagens = [personagem for personagem in mapa.personagens if personagem.posicao != posicao_grid]
     mapa.inimigos = [inimigo for inimigo in mapa.inimigos if inimigo.posicao != posicao_grid]
 
+def create_character(position_grid, is_player = True):
+    input_box = pygame.Rect(100, 100, 140, 32)
+    fonte = pygame.font.Font(None, 32)
+    clock = pygame.time.Clock()
+    input_text = ''
+    active = True
+
+    while active:
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_RETURN:
+
+                    mapa.adicionar_personagem(Personagem(input_text, posicao_grid, COR_PLAYER))
+                    active = False
+                elif evento.key == pygame.K_BACKSPACE:
+                    input_text = input_text[:-1]
+                else:
+                    input_text += evento.unicode
+
+        # tela.fill(COR_FUNDO)
+        txt_surface = fonte.render(input_text, True, COR_TEXTO)
+        largura_box = max(200, txt_surface.get_width()+10)
+        input_box.w = largura_box
+
+        tela.blit(txt_surface, (input_box.x+5, input_box.y+5))
+        pygame.draw.rect(tela, COR_INPUT_BG, input_box, 2)
+
+        pygame.display.flip()
+        clock.tick(30)
+
+
+
 
 def rolar_dado(tela):
     input_box = pygame.Rect(100, 100, 140, 32)
@@ -328,7 +266,7 @@ def rolar_dado(tela):
                 else:
                     input_text += evento.unicode
 
-        tela.fill(COR_FUNDO)
+        # tela.fill(COR_FUNDO)
         txt_surface = fonte.render(input_text, True, COR_TEXTO)
         largura_box = max(200, txt_surface.get_width()+10)
         input_box.w = largura_box
@@ -413,7 +351,7 @@ while True:
         if evento.key == pygame.K_z:
             rolar_dado(tela)
         elif evento.key == pygame.K_c:
-            mapa.adicionar_personagem(Personagem(f"Jogador{len(mapa.personagens) + 1}", posicao_grid, COR_PLAYER))
+            create_character(posicao_grid)
         elif evento.key == pygame.K_e:
             mapa.adicionar_inimigo(Personagem(f"Inimigo{len(mapa.inimigos) + 1}", posicao_grid, COR_INIMIGO))
         elif evento.key == pygame.K_s:
