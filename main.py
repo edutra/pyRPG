@@ -98,6 +98,76 @@ class MapaRPG:
         for y in range(0, ALTURA_TELA, TAMANHO_CELULA):
             pygame.draw.line(tela, COR_GRID, (0, y), (LARGURA_TELA - LARGURA_MENU, y))
 
+    def save(self, tela):
+        input_box = pygame.Rect(100, 100, 140, 32)
+        fonte = pygame.font.Font(None, 32)
+        clock = pygame.time.Clock()
+        input_text = ''
+        active = True
+
+        while active:
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if evento.type == pygame.KEYDOWN:
+                    if evento.key == pygame.K_RETURN:
+                        Saver.salvar_mapa(input_text, self.personagens, self.estruturas, self.objetos_interativos, self.chao, self.inimigos) 
+                        active = False
+                    elif evento.key == pygame.K_BACKSPACE:
+                        input_text = input_text[:-1]
+                    else:
+                        input_text += evento.unicode
+
+            # tela.fill(COR_FUNDO)
+            txt_surface = fonte.render(input_text, True, COR_TEXTO)
+            largura_box = max(200, txt_surface.get_width()+10)
+            input_box.w = largura_box
+
+            tela.blit(txt_surface, (input_box.x+5, input_box.y+5))
+            pygame.draw.rect(tela, COR_INPUT_BG, input_box, 2)
+
+            pygame.display.flip()
+            clock.tick(30)
+
+    def load(self, tela):
+        input_box = pygame.Rect(100, 100, 140, 32)
+        fonte = pygame.font.Font(None, 32)
+        clock = pygame.time.Clock()
+        input_text = ''
+        active = True
+
+        while active:
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if evento.type == pygame.KEYDOWN:
+                    if evento.key == pygame.K_RETURN:
+                        chars, self.estruturas, self.objetos_interativos, self.chao, inimigos =Saver.carregar_mapa(input_text)
+
+                        self.personagens = chars[0]
+                        self.inimigos = inimigos[0]
+
+                        active = False
+                    elif evento.key == pygame.K_BACKSPACE:
+                        input_text = input_text[:-1]
+                    else:
+                        input_text += evento.unicode
+
+            # tela.fill(COR_FUNDO)
+            txt_surface = fonte.render(input_text, True, COR_TEXTO)
+            largura_box = max(200, txt_surface.get_width()+10)
+            input_box.w = largura_box
+
+            tela.blit(txt_surface, (input_box.x+5, input_box.y+5))
+            pygame.draw.rect(tela, COR_INPUT_BG, input_box, 2)
+
+            pygame.display.flip()
+            clock.tick(30)
+ 
+
+
 def ajustar_para_grid(posicao):
     x, y = posicao
     x = (x // TAMANHO_CELULA) * TAMANHO_CELULA + TAMANHO_CELULA // 2
@@ -335,15 +405,11 @@ while True:
         elif evento.key == pygame.K_e:
             mapa.adicionar_inimigo(Personagem(f"Inimigo{len(mapa.inimigos) + 1}", posicao_grid, COR_INIMIGO))
         elif evento.key == pygame.K_s:
-            Saver.salvar_mapa("mapa.json", mapa.personagens, mapa.estruturas, mapa.objetos_interativos, mapa.chao, mapa.inimigos)
+            mapa.save(tela)
+            # Saver.salvar_mapa("mapa.json", mapa.personagens, mapa.estruturas, mapa.objetos_interativos, mapa.chao, mapa.inimigos)
             # mapa.salvar_mapa("mapa_salvo.json")
         elif evento.key == pygame.K_l:
-            chars, mapa.estruturas, mapa.objetos_interativos, mapa.chao, enemies = Saver.carregar_mapa("mapa.json")
-            mapa.personagens = []
-            mapa.inimigos = []
-            for x in chars[0] + enemies[0]:
-                mapa.adicionar_personagem(x)
-            # mapa.carregar_mapa("mapa_salvo.json")
+            mapa.load(tela)
         elif evento.key == pygame.K_x:
             remover_estrutura_ou_objeto(mapa, posicao_grid)
 
