@@ -14,7 +14,6 @@ class ObjetoInterativo:
         self.altura = TAMANHO_CELULA - 10
 
     def desenhar(self, tela):
-        # pygame.draw.rect(tela, self.cor, pygame.Rect(self.posicao[0] - self.largura // 2, self.posicao[1] - self.altura // 2, self.largura, self.altura))
         image = pygame.transform.scale(pygame.image.load('assets/chest_1.png').convert_alpha(), (self.largura, self.altura))
         tela.blit(image, (self.posicao[0] - self.largura // 2, self.posicao[1] - self.altura // 2))
 

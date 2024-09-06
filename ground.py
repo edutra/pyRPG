@@ -15,16 +15,12 @@ class Chao:
         image = None
         if self.tipo == 'grama':
                 image = pygame.transform.scale(pygame.image.load('assets/grass.png').convert_alpha(), (self.largura, self.altura))
-                # tela.blit(image, (self.posicao[0] - self.largura // 2, self.posicao[1] - self.altura // 2))
         elif self.tipo == 'agua':
                  image = pygame.transform.scale(pygame.image.load('assets/water.png').convert_alpha(), (self.largura, self.altura))
-                 # tela.blit(image, (self.posicao[0] - self.largura // 2, self.posicao[1] - self.altura // 2))
         elif self.tipo == 'lava':
                  image = pygame.transform.scale(pygame.image.load('assets/lava.png').convert_alpha(), (self.largura, self.altura))
-                 # tela.blit(image, (self.posicao[0] - self.largura // 2, self.posicao[1] - self.altura // 2))
         elif self.tipo == 'pedra':
                  image = pygame.transform.scale(pygame.image.load('assets/stone.png').convert_alpha(), (self.largura, self.altura))
-
 
         tela.blit(image, (self.posicao[0] - self.largura // 2, self.posicao[1] - self.altura // 2))
     def to_dict(self):
