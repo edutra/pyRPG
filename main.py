@@ -42,7 +42,7 @@ class MapaRPG:
     def __init__(self):
         self.andares = {}
         self.floor_number = 0
-        # self.init_floor(self.floor_number)
+        # self.init_level_ground(self.floor_number)
         self.level = {
                 "ground": {},
                 "structures": [],
@@ -50,13 +50,14 @@ class MapaRPG:
                 "characters": [],
                 "enemies": []
                 }
+        self.init_level_ground()
         # self.personagens = []
         # self.estruturas = []
         # self.objetos_interativos = []
         # # self.chao = self.inicializar_chao()
         # self.inimigos = []
 
-    def init_floor(self, floor_number):
+    def init_level_ground(self, floor_number = 0):
         self.inicializar_chao()
         # if floor_number not in self.andares:
         #     self.andares[floor_number] = {
@@ -80,7 +81,7 @@ class MapaRPG:
     def mudar_andar(self, numero_andar):
         print(numero_andar)
         if numero_andar not in self.andares:
-            self.init_floor(numero_andar)
+            self.init_level_ground(numero_andar)
         self.floor_number = numero_andar
     
     def adicionar_personagem(self, personagem):
@@ -131,7 +132,7 @@ class MapaRPG:
         # Verifica se o andar atual foi inicializado
         print(self.floor_number)
         # if self.floor_number not in self.andares:
-        #     self.init_floor(self.floor_number)
+        #     self.init_level_ground(self.floor_number)
 
         andar = self.level 
         for chao in andar["ground"].values():
@@ -165,7 +166,7 @@ class MapaRPG:
                     sys.exit()
                 if evento.type == pygame.KEYDOWN:
                     if evento.key == pygame.K_RETURN:
-                        Saver.salvar_mapa(input_text, self.andares) 
+                        Saver.salvar_mapa(input_text, self.level) 
                         active = False
                     elif evento.key == pygame.K_BACKSPACE:
                         input_text = input_text[:-1]
@@ -235,21 +236,21 @@ class MapaRPG:
                 if evento.type == pygame.KEYDOWN:
                     if evento.key == pygame.K_RETURN:
                         # Carregar o mapa usando o Saver
-                        self.andares = Saver.carregar_mapa(input_text)
-                        print(self.andares['0']["personagens"])
+                        self.level = Saver.carregar_mapa(input_text)
+                        # print(self.andares['0']["personagens"])
 
                         # Garantir que o andar atual seja inicializado
-                        if self.floor_number not in self.andares:
-                            self.init_floor(self.floor_number)
+                        # if self.floor_number not in self.andares:
+                        #     self.init_level_ground(self.floor_number)
 
                         # Atualizar as listas de objetos e personagens para o andar atual
-                        self.personagens = self.andares[self.floor_number]["personagens"]
-                        for personagem in self.personagens:
-                            print(personagem.nome)
-                        self.andares= self.andares[self.floor_number]["structures"]
-                        self.objetos_interativos = self.andares[self.floor_number]["objetos_interativos"]
-                        self.chao = self.andares[self.floor_number]["chao"]
-                        self.inimigos = self.andares[self.floor_number]["enemies"]
+                        # self.personagens = self.andares[self.floor_number]["personagens"]
+                        # for personagem in self.personagens:
+                        #     print(personagem.nome)
+                        # self.andares= self.andares[self.floor_number]["structures"]
+                        # self.objetos_interativos = self.andares[self.floor_number]["objetos_interativos"]
+                        # self.chao = self.andares[self.floor_number]["chao"]
+                        # self.inimigos = self.andares[self.floor_number]["enemies"]
 
                         active = False
                     elif evento.key == pygame.K_BACKSPACE:
@@ -488,7 +489,7 @@ while True:
                 modo = None
             else:
             
-                movable_entities = mapa.andares[mapa.floor_number]["personagens"] + mapa.andares[mapa.floor_number]["enemies"]
+                movable_entities = mapa.level["characters"] + mapa.level["enemies"]
                 for entity in movable_entities:
                     if entity.checar_clique(posicao_mouse):
                         entity.arrastando = True
@@ -518,10 +519,10 @@ while True:
             mapa.load(screen)
         elif evento.key == pygame.K_x:
             remover_estrutura_ou_objeto(mapa, posicao_grid)
-        elif evento.key == pygame.K_UP:  # Muda para andar superior
-            mapa.mudar_andar(mapa.floor_number + 1)
-        elif evento.key == pygame.K_DOWN:  # Muda para andar inferior
-            mapa.mudar_andar(mapa.floor_number - 1)
+        # elif evento.key == pygame.K_UP:  # Muda para andar superior
+        #     mapa.mudar_andar(mapa.floor_number + 1)
+        # elif evento.key == pygame.K_DOWN:  # Muda para andar inferior
+        #     mapa.mudar_andar(mapa.floor_number - 1)
 
 
     # Preenche o fundo
