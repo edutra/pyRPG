@@ -1,7 +1,5 @@
 import pygame
 import sys
-# import tkinter as tk
-# from tkinter import simpledialog
 import random
 from character import Personagem
 from structure import Estrutura
@@ -36,13 +34,8 @@ pygame.init()
 screen = pygame.display.set_mode((WIDTH_SCREEN, HEIGHT_SCREEN), pygame.RESIZABLE)
 pygame.display.set_caption("Mapa de RPG de Mesa")
 
-
-
 class MapaRPG:
     def __init__(self):
-        self.andares = {}
-        self.floor_number = 0
-        # self.init_level_ground(self.floor_number)
         self.level = {
                 "ground": {},
                 "structures": [],
@@ -51,23 +44,9 @@ class MapaRPG:
                 "enemies": []
                 }
         self.init_level_ground()
-        # self.personagens = []
-        # self.estruturas = []
-        # self.objetos_interativos = []
-        # # self.chao = self.inicializar_chao()
-        # self.inimigos = []
 
     def init_level_ground(self, floor_number = 0):
         self.inicializar_chao()
-        # if floor_number not in self.andares:
-        #     self.andares[floor_number] = {
-        #         "chao": {},
-        #         "structures": [],
-        #         "objetos_interativos": [],
-        #         "personagens": [],
-        #         "enemies": []
-        #     }
-        #     self.inicializar_chao(floor_number)
 
     def inicializar_chao(self):
         ground = {}
@@ -76,29 +55,18 @@ class MapaRPG:
                 posicao_grid = (x + SIZE_CELL // 2, y + SIZE_CELL // 2)
                 ground[posicao_grid] = Chao("grama", posicao_grid, COLOR_GRASS)
         self.level["ground"] = ground 
-        # return chao
-    
-    def mudar_andar(self, numero_andar):
-        print(numero_andar)
-        if numero_andar not in self.andares:
-            self.init_level_ground(numero_andar)
-        self.floor_number = numero_andar
     
     def adicionar_personagem(self, personagem):
         self.level["characters"].append(personagem)
-        # self.andares[self.floor_number]["personagens"].append(personagem)
 
     def adicionar_inimigo(self, inimigo):
         self.level["enemies"].append(inimigo)
-        # self.andares[self.floor_number]["enemies"].append(inimigo)
     
     def adicionar_estrutura(self, estrutura):
         self.level["structures"].append(estrutura)
-        # self.andares[self.floor_number]["structures"].append(estrutura)
     
     def adicionar_objeto_interativo(self, objeto):
         self.level["objects"].append(objeto)
-        # self.andares[self.floor_number]["objetos_interativos"].append(objeto)
     
     def modificar_chao(self, posicao_grid, tipo):
         cor = ''
@@ -113,26 +81,9 @@ class MapaRPG:
 
         novo_chao = Chao(tipo, posicao_grid, cor)
         self.level["ground"][posicao_grid] = novo_chao
-        # self.andares[self.floor_number]["chao"][posicao_grid] = novo_chao    
-    # def desenhar(self, screen):
-    #     print(self.andares)
-    #     andar = self.andares[self.floor_number]
-    #     for chao in andar["chao"].values():
-    #         chao.desenhar(screen)
-    #     for estrutura in andar["structures"]:
-    #         estrutura.desenhar(screen)
-    #     for objeto in andar["objetos_interativos"]:
-    #         objeto.desenhar(screen)
-    #     for personagem in andar["personagens"]:
-    #         personagem.desenhar(screen)
-    #     for inimigo in andar["enemies"]:
-    #         inimigo.desenhar(screen)    
-    #
+
     def desenhar(self, screen):
         # Verifica se o andar atual foi inicializado
-        print(self.floor_number)
-        # if self.floor_number not in self.andares:
-        #     self.init_level_ground(self.floor_number)
 
         andar = self.level 
         for chao in andar["ground"].values():
@@ -185,42 +136,6 @@ class MapaRPG:
             pygame.display.flip()
             clock.tick(30)
 
-    # def load(self, screen):
-    #     input_box = pygame.Rect(100, 100, 140, 32)
-    #     fonte = pygame.font.Font(None, 32)
-    #     clock = pygame.time.Clock()
-    #     input_text = ''
-    #     active = True
-    #
-    #     while active:
-    #         for evento in pygame.event.get():
-    #             if evento.type == pygame.QUIT:
-    #                 pygame.quit()
-    #                 sys.exit()
-    #             if evento.type == pygame.KEYDOWN:
-    #                 if evento.key == pygame.K_RETURN:
-    #                     self.andares = Saver.carregar_mapa(input_text)
-    #
-    #                     self.personagens = self.andares[self.floor_number]["chars"]
-    #                     # self.inimigos = inimigos[0]
-    #
-    #                     active = False
-    #                 elif evento.key == pygame.K_BACKSPACE:
-    #                     input_text = input_text[:-1]
-    #                     print("teste ")
-    #                 else:
-    #                     input_text += evento.unicode
-    #
-    #         # screen.fill(COLOR_BACKGROUND)
-    #         txt_surface = fonte.render(input_text, True, COLOR_TEXT)
-    #         largura_box = max(200, txt_surface.get_width()+10)
-    #         input_box.w = largura_box
-    #
-    #         screen.blit(txt_surface, (input_box.x+5, input_box.y+5))
-    #         pygame.draw.rect(screen, COLOR_INPUT_BG, input_box, 2)
-    #
-    #         pygame.display.flip()
-    #         clock.tick(30)
     def load(self, screen):
         input_box = pygame.Rect(100, 100, 140, 32)
         fonte = pygame.font.Font(None, 32)
@@ -237,20 +152,6 @@ class MapaRPG:
                     if evento.key == pygame.K_RETURN:
                         # Carregar o mapa usando o Saver
                         self.level = Saver.carregar_mapa(input_text)
-                        # print(self.andares['0']["personagens"])
-
-                        # Garantir que o andar atual seja inicializado
-                        # if self.floor_number not in self.andares:
-                        #     self.init_level_ground(self.floor_number)
-
-                        # Atualizar as listas de objetos e personagens para o andar atual
-                        # self.personagens = self.andares[self.floor_number]["personagens"]
-                        # for personagem in self.personagens:
-                        #     print(personagem.nome)
-                        # self.andares= self.andares[self.floor_number]["structures"]
-                        # self.objetos_interativos = self.andares[self.floor_number]["objetos_interativos"]
-                        # self.chao = self.andares[self.floor_number]["chao"]
-                        # self.inimigos = self.andares[self.floor_number]["enemies"]
 
                         active = False
                     elif evento.key == pygame.K_BACKSPACE:
@@ -311,7 +212,6 @@ def desenhar_menu(screen, submenu=None):
         screen.blit(texto_grama, (WIDTH_SCREEN - WIDTH_MENU + 20, 500))
         screen.blit(texto_pedra, (WIDTH_SCREEN - WIDTH_MENU + 20, 560))
 
-
 # Função para detectar clique no menu
 def checar_clique_menu(posicao_mouse, submenu=None):
     if posicao_mouse[0] > WIDTH_SCREEN - WIDTH_MENU:
@@ -344,7 +244,6 @@ def checar_clique_menu(posicao_mouse, submenu=None):
                 return "grama"
             elif 560 <= posicao_mouse[1] <= 610:
                 return "pedra"
-
 
     return None
 
@@ -391,9 +290,6 @@ def create_character(position_grid, is_player = True):
 
         pygame.display.flip()
         clock.tick(30)
-
-
-
 
 def rolar_dado(screen):
     input_box = pygame.Rect(100, 100, 140, 32)
@@ -469,7 +365,6 @@ while True:
             posicao_grid = ajustar_para_grid(posicao_mouse)
             if modo == "player":
                 create_character(posicao_grid)
-                # mapa.adicionar_personagem(Personagem(f"Jogador{len(mapa.personagens) + 1}", posicao_grid, COLOR_PLAYER))
                 modo = None
             elif modo == "inimigo":
                 create_character(posicao_grid, False)
@@ -519,11 +414,6 @@ while True:
             mapa.load(screen)
         elif evento.key == pygame.K_x:
             remover_estrutura_ou_objeto(mapa, posicao_grid)
-        # elif evento.key == pygame.K_UP:  # Muda para andar superior
-        #     mapa.mudar_andar(mapa.floor_number + 1)
-        # elif evento.key == pygame.K_DOWN:  # Muda para andar inferior
-        #     mapa.mudar_andar(mapa.floor_number - 1)
-
 
     # Preenche o fundo
     screen.fill(COLOR_BACKGROUND)
